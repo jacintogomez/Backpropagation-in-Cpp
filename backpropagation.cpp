@@ -9,24 +9,29 @@ using namespace std;
 
 typedef vector<double> vd;
 
-double relu(double j){
-    if(j<0){return 0;}
-    else{return j;}
+double relu(double z){
+    if(z<0){return 0;}
+    else{return z;}
+}
+
+double sigmoid(double z){
+    double num=1.0,e=2.718;
+    return num/(num+pow(e,-1*z));
 }
 
 class Neuron{
 public:
     Neuron(int i):inputs(i){}
-    int inputs,result;
-    double bias;
+    int inputs;
+    double bias,z=0,result;
     double neuron_weight;
     vd weights;
     void activate(vd input){
         for(int x=0;x<input.size();x++){
-            result+=weights[x]*input[x];
+            z+=weights[x]*input[x];
         }
-        result+=bias;
-        result=relu(result);
+        z+=bias;
+        result=sigmoid(z);
     }
 };
 
@@ -42,16 +47,33 @@ public:
     int num_neurons;
     int epochs;
     int network_bias;
-    int prediction;
-    double learningrate=0.01;
+    int prediction=0;
+    double eta=0.01; //learning rate
     vd input;
+    double actual;
     vector<Neuron> neurons;
     void forwardpropagation(){
-        for(Neuron n:neurons){
+        for(Neuron &n:neurons){
             n.activate(input);
             prediction+=n.result*n.neuron_weight;
         }
         prediction+=network_bias;
+    }
+    void backpropagation(){
+        //int cost=pow((prediction-actual),2);
+        double dcost_dpred=2*(prediction-actual); //also dcost_dnetbias, and dcost_dnetweight
+        network_bias-=eta*dcost_dpred; //update final bias
+        for(Neuron &n:neurons){
+            n.result-=eta*dcost_dpred;
+            n.bias-=eta*dcost_dpred;
+            double z=n.z;
+            double dpred_dg=sigmoid(z)*(1-sigmoid(z));
+            double dcost_intermediate=dcost_dpred*n.neuron_weight*dpred_dg;
+            n.neuron_weight-=eta*dcost_intermediate;
+            for(int x=0;x<inputs;x++){
+                n.weights[x]-=eta*dcost_intermediate*input[x];
+            }
+        }
     }
 };
 
