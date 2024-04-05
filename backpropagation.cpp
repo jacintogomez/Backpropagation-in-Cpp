@@ -9,6 +9,14 @@ using namespace std;
 
 typedef vector<double> vd;
 
+void print(vd j){
+    cout<<"{";
+    for(int k=0;k<j.size()-1;k++){
+        cout<<j[k]<<",";
+    }
+    cout<<j[j.size()-1]<<"}";
+}
+
 double relu(double z){
     if(z<0){return 0;}
     else{return z;}
@@ -22,9 +30,7 @@ double sigmoid(double z){
 class Neuron{
 public:
     Neuron(int i):inputs(i){}
-    Neuron(vd wts,double nw,double bi):weights(wts),neuron_weight(nw),bias(bi){
-        cout<<"made neuron with weights: "<<wts[0]<<endl;
-    }
+    Neuron(vd wts,double nw,double bi):weights(wts),neuron_weight(nw),bias(bi){}
     int inputs;
     double bias,z=0,result;
     double neuron_weight;
@@ -35,7 +41,9 @@ public:
             z+=weights[x]*input[x];
         }
         z+=bias;
+        cout<<"pre-sigmoid is "<<z<<endl;
         result=sigmoid(z);
+        cout<<"result is "<<result<<endl;
     }
 };
 
@@ -68,6 +76,7 @@ public:
             prediction+=n.result*n.neuron_weight;
         }
         prediction+=network_bias;
+        cout<<"prediction is "<<prediction<<endl;
     }
     void backpropagation(){
         //int cost=pow((prediction-actual),2);
@@ -82,12 +91,26 @@ public:
             n.bias-=eta*dcost_intermediate;
             for(int x=0;x<inputs;x++){
                 n.weights[x]-=eta*dcost_intermediate*input[x];
-                cout<<"w: "<<n.weights[x]<<endl;
             }
-            cout<<"W: "<<n.neuron_weight<<endl;
-            cout<<"b: "<<n.bias<<endl;
         }
-        cout<<"B: "<<network_bias<<endl;
+    }
+    void display_parameters(){
+        vd output;
+        int cw=1,cb=1;
+        for(Neuron n:neurons){
+            for(double w:n.weights){
+                cout<<"w"<<cw<<" = "<<w<<endl;
+                output.push_back(w);
+                cw++;
+            }
+            cout<<"b"<<cb<<" = "<<n.bias<<endl;
+            cb++;
+        }
+        for(Neuron n:neurons){
+            cout<<"w"<<cw<<" = "<<n.neuron_weight<<endl;
+            cw++;
+        }
+        cout<<"b"<<cb<<" = "<<network_bias<<endl;
     }
 };
 
@@ -138,9 +161,9 @@ vector<Student> read_in_data(){
 }
 
 int main(){
-    vector<vd> nest={{0.1,0.15,0.1},{0.05,0.1,0.1}};
+    vector<vd> nest={{0.1,0.1,0.1},{0.05,0.1,0.1}};
     vd wts={12,9};
-    vd biases={0.1,0.1};
+    vd biases={-15,0.1};
     vector<Student> data=read_in_data();
     int numof_neurons=2,numof_inputs=3,epochs=1;
     Network net(nest,wts,biases,numof_inputs,numof_neurons);
@@ -148,7 +171,8 @@ int main(){
         net.input=data[x].work;
         net.actual=data[x].fin;
         net.forwardpropagation();
-        net.backpropagation();
+        //net.backpropagation();
     }
+    //net.display_parameters();
     return 0;
 }
