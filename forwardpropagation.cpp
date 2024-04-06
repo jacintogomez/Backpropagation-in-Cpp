@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <fstream>
 #include <vector>
 using namespace std;
 
@@ -41,9 +40,7 @@ public:
             z+=weights[x]*input[x];;
         }
         z+=bias;
-        cout<<"pre-sigmoid is "<<z<<endl;
         result=sigmoid(z);
-        cout<<"result is "<<result<<endl;
     }
 };
 
@@ -65,9 +62,7 @@ public:
     int num_neurons;
     double network_bias;
     double prediction=0;
-    double eta=0.01; //learning rate
     vd input;
-    double actual;
     vector<Neuron> neurons;
     void forwardpropagation(){
         prediction=0;
@@ -76,56 +71,11 @@ public:
             prediction+=n.result*n.neuron_weight;
         }
         prediction+=network_bias;
-        cout<<"prediction is "<<prediction<<endl;
-    }
-    void backpropagation(){
-        //int cost=pow((prediction-actual),2); //cost function
-        double dcost_dpred=2*(prediction-actual); //also dcost_dnetbias, and dcost_dnetweight
-        cout<<"dcostpred is "<<dcost_dpred<<endl;
-        cout<<"prediction is "<<prediction<<endl;
-        cout<<"prediction is "<<prediction<<endl;
-        network_bias-=eta*dcost_dpred; //update final bias
-        for(Neuron &n:neurons){
-            n.neuron_weight-=eta*dcost_dpred*n.result;
-            double z=n.z;
-            double dpred_dg=sigmoid(z)*(1-sigmoid(z));
-            double dcost_intermediate=dcost_dpred*n.neuron_weight*dpred_dg;
-            n.bias-=eta*dcost_intermediate;
-            for(int x=0;x<inputs;x++){
-                n.weights[x]-=eta*dcost_intermediate*input[x];
-            }
-        }
-    }
-    void display_parameters(){
-        vd weights;
-        vd biases;
-        int cw=1,cb=1;
-        for(Neuron n:neurons){
-            for(double w:n.weights){
-                cout<<"w"<<cw<<" = "<<w<<endl;
-                weights.push_back(w);
-                cw++;
-            }
-            cout<<"b"<<cb<<" = "<<n.bias<<endl;
-            cb++;
-        }
-        for(Neuron n:neurons){
-            cout<<"w"<<cw<<" = "<<n.neuron_weight<<endl;
-            weights.push_back(n.neuron_weight);
-            biases.push_back(n.bias);
-            cw++;
-        }
-        biases.push_back(network_bias);
-        cout<<"b"<<cb<<" = "<<network_bias<<endl;
-        print(weights);
-        print(biases);
     }
 };
 
 class Student{
 public:
-//    Student(vd h,vd x,double f):hws(h),exams(x),fin(f){}
-//    Student(string id,vd h,vd x,double f):netid(id),hws(h),exams(x),fin(f){}
     Student(vd w,double f):work(w),fin(f){}
     string netid;
     vd work;
@@ -133,12 +83,14 @@ public:
 };
 
 int main(){
-    vector<vd> nest={{1.0,3.0},{2.0,4.0}};
-    vd wts={5.0,5.0};
-    vd biases={-35.5,-50.5};
-    double netbias=2.0;
+    vector<vd> nest={{9.98448,20.969},{10.9845,21.969}};
+    vd wts={5.52272,5.52272};
+    vd biases={-33.7031,-48.7031};
+    vd hws={5,10};
+    double netbias=3.38449;
     int numof_neurons=nest.size(),numof_inputs=nest[0].size();
     Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
+    net.input=hws;
     net.forwardpropagation();
     cout<<"Prediction is: "<<net.prediction;
     return 0;

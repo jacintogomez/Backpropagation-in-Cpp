@@ -117,15 +117,16 @@ public:
         }
         biases.push_back(network_bias);
         cout<<"b"<<cb<<" = "<<network_bias<<endl;
+        cout<<"Copy and paste these as the vector initializations in forwardpropagation.cpp:"<<endl;
+        cout<<"Weights: ";
         print(weights);
+        cout<<"Biases: ";
         print(biases);
     }
 };
 
 class Student{
 public:
-//    Student(vd h,vd x,double f):hws(h),exams(x),fin(f){}
-//    Student(string id,vd h,vd x,double f):netid(id),hws(h),exams(x),fin(f){}
     Student(vd w,double f):work(w),fin(f){}
     string netid;
     vd work;
