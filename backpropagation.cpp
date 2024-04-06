@@ -38,7 +38,7 @@ public:
     void activate(vd input){
         z=0;
         for(int x=0;x<input.size();x++){
-            z+=weights[x]*input[x];
+            z+=weights[x]*input[x];;
         }
         z+=bias;
         cout<<"pre-sigmoid is "<<z<<endl;
@@ -63,7 +63,7 @@ public:
     }
     int inputs;
     int num_neurons;
-    double network_bias=0.1;
+    double network_bias=2.0;
     double prediction=0;
     double eta=0.01; //learning rate
     vd input;
@@ -79,12 +79,14 @@ public:
         cout<<"prediction is "<<prediction<<endl;
     }
     void backpropagation(){
-        //int cost=pow((prediction-actual),2);
+        //int cost=pow((prediction-actual),2); //cost function
         double dcost_dpred=2*(prediction-actual); //also dcost_dnetbias, and dcost_dnetweight
+        cout<<"dcostpred is "<<dcost_dpred<<endl;
+        cout<<"prediction is "<<prediction<<endl;
+        cout<<"prediction is "<<prediction<<endl;
         network_bias-=eta*dcost_dpred; //update final bias
         for(Neuron &n:neurons){
-            n.result-=eta*dcost_dpred;
-            n.neuron_weight-=eta*dcost_dpred;
+            n.neuron_weight-=eta*dcost_dpred*n.result;
             double z=n.z;
             double dpred_dg=sigmoid(z)*(1-sigmoid(z));
             double dcost_intermediate=dcost_dpred*n.neuron_weight*dpred_dg;
@@ -111,6 +113,7 @@ public:
             cw++;
         }
         cout<<"b"<<cb<<" = "<<network_bias<<endl;
+        print(output);
     }
 };
 
@@ -136,17 +139,18 @@ vector<Student> read_in_data(){
         infile.open(filename);
     }
     //double h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,e1,e2,f;
-    double h1,h2,h3,f;
+//    double h1,h2,h3,f;
+    double h1,h2,f;
     vector<Student> studentdata;
     while(infile>>h1){
         //vd params={h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,e1,e2};
         infile.ignore(999,' ');
         infile>>h2;
-        infile.ignore(999,' ');
-        infile>>h3;
+//        infile.ignore(999,' ');
+//        infile>>h3;
         infile.ignore(999,' ');
         infile>>f;
-        vd params={h1,h2,h3};
+        vd params={h1,h2};
         Student s(params,f);
         studentdata.push_back(s);
     }
@@ -161,18 +165,18 @@ vector<Student> read_in_data(){
 }
 
 int main(){
-    vector<vd> nest={{0.1,0.1,0.1},{0.05,0.1,0.1}};
-    vd wts={12,9};
-    vd biases={-15,0.1};
+    vector<vd> nest={{1.0,2.0},{3.0,4.0}};
+    vd wts={5.0,5.0};
+    vd biases={-35.5,-50.5};
     vector<Student> data=read_in_data();
-    int numof_neurons=2,numof_inputs=3,epochs=1;
+    int numof_neurons=2,numof_inputs=2,epochs=1;
     Network net(nest,wts,biases,numof_inputs,numof_neurons);
     for(int x=0;x<epochs;x++){
         net.input=data[x].work;
         net.actual=data[x].fin;
         net.forwardpropagation();
-        //net.backpropagation();
+        net.backpropagation();
     }
-    //net.display_parameters();
+    net.display_parameters();
     return 0;
 }
