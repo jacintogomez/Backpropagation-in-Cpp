@@ -175,7 +175,7 @@ int main(){
     vd biases={-35.5,-50.5};
     double netbias=2.0;
     vector<Student> data=read_in_data();
-    int numof_neurons=2,numof_inputs=2,epochs=4;
+    int numof_neurons=2,numof_inputs=2,epochs=1;
     Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
     for(int x=0;x<epochs;x++){
         for(Student s:data){
