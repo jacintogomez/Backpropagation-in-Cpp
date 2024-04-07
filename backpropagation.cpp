@@ -173,11 +173,15 @@ vector<Student> read_in_data(){
 int main(){
     vector<vd> nest={{1.0,3.0},{2.0,4.0}};
     vd wts={5.0,5.0};
-    vd biases={-35.5,-50.5};
-    double netbias=2.0;
+    vd biases={-15,-15,-10,-10,-10,-15,-15};
+    double netbias=-5;
     vector<Student> data=read_in_data();
-    int numof_neurons=2,numof_inputs=2,epochs=1;
+    int numof_neurons=7,numof_inputs=12,epochs=100;
     Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
+    if(numof_neurons!=nest.size()||numof_neurons!=wts.size()||numof_inputs!=biases.size()||numof_inputs!=nest[0].size()){
+        cout<<"Dimensional mismatch";
+        exit(1);
+    }
     for(int x=0;x<epochs;x++){
         for(Student s:data){
             net.input=s.work;

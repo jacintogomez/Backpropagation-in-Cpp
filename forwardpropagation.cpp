@@ -85,11 +85,15 @@ public:
 int main(){
     vector<vd> nest={{9.98448,20.969},{10.9845,21.969}};
     vd wts={5.52272,5.52272};
-    vd biases={-33.7031,-48.7031};
+    vd biases={-15,-15,-10,-10,-10,-15,-15};
     vd hws={5,10};
-    double netbias=3.38449;
-    int numof_neurons=nest.size(),numof_inputs=nest[0].size();
+    double netbias=-10;
+    int numof_neurons=7,numof_inputs=12;
     Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
+    if(numof_neurons!=nest.size()||numof_neurons!=wts.size()||numof_inputs!=biases.size()||numof_inputs!=nest[0].size()){
+        cout<<"Dimensional mismatch";
+        exit(1);
+    }
     net.input=hws;
     net.forwardpropagation();
     cout<<"Prediction is: "<<net.prediction;
