@@ -42,7 +42,9 @@ public:
             z+=weights[x]*input[x];;
         }
         z+=bias;
+        cout<<"pre-sigmoid is "<<z<<endl;
         result=sigmoid(z);
+        cout<<"result is "<<result<<endl;
     }
 };
 
@@ -80,6 +82,9 @@ public:
     void backpropagation(){
         //int cost=pow((prediction-actual),2); //cost function
         double dcost_dpred=2*(prediction-actual); //also dcost_dnetbias, and dcost_dnetweight
+        cout<<"dcostpred is "<<dcost_dpred<<endl;
+        cout<<"prediction is "<<prediction<<endl;
+        cout<<"prediction is "<<prediction<<endl;
         network_bias-=eta*dcost_dpred; //update final bias
         for(Neuron &n:neurons){
             n.neuron_weight-=eta*dcost_dpred*n.result;
@@ -123,14 +128,12 @@ public:
 
 class Student{
 public:
-    Student(vd w,double f,int c):work(w),fin(f),num(c){}
+    Student(vd w,double f):work(w),fin(f){}
     string netid;
-    int num;
     vd work;
     double fin;
     void display(){
         int c=1;
-        cout<<"Student "<<num<<endl;
         for(double w:work){
             cout<<"HW"<<c<<": "<<w<<endl;
             c++;
@@ -140,51 +143,63 @@ public:
 };
 
 void print2(vector<Student> j){
-    // for(Student s:j){
-    //     s.display();
-    // }
-    // for(int x=j.size();x>620;x--){
-    //     j[x-1].display();
-    // }
     for(Student s:j){
-        if(s.num>620&&s.num<1000){s.display();}
+        s.display();
     }
 }
 
 vector<Student> read_in_data(){
     ifstream infile;
-    string filename="test.txt";
+    string filename="info.txt";
     cout<<"file name is "<<filename<<endl;
     infile.open(filename);
-    int linenum=1;
     while(!infile){
         cout<<"Failed to open"<<endl<<"Re-enter file name: ";
         cin>>filename;
         infile.clear();
         infile.open(filename);
     }
-    double hw,f;
+    double h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,e1,e2,f;
+    //double h1,h2,h3,f;
+    //double h1,h2,f;
     vector<Student> studentdata;
-    vd params;
-    while((infile>>std::ws)){
-        params.clear();
-        for(int i=1;i<=12;i++){
-            infile>>hw;
-            params.push_back(hw);
-            infile>>std::ws;
-        }
+    int c=0;
+    while((infile>>h1)&&c<5){
+        c++;
+        vd params={h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,e1,e2};
+        infile.ignore(999,'\t');
+        infile>>h2;
+        infile.ignore(999,'\t');
+        infile>>h3;
+        infile.ignore(999,'\t');
+        infile>>h4;
+        infile.ignore(999,'\t');
+        infile>>h5;
+        infile.ignore(999,'\t');
+        infile>>h6;
+        infile.ignore(999,'\t');
+        infile>>h7;
+        infile.ignore(999,'\t');
+        infile>>h8;
+        infile.ignore(999,'\t');
+        infile>>h9;
+        infile.ignore(999,'\t');
+        infile>>h10;
+        infile.ignore(999,'\t');
+        infile>>e1;
+        infile.ignore(999,'\t');
+        infile>>e2;
+        infile.ignore(999,'\t');
         infile>>f;
-        Student s(params,f,linenum);
+        Student s(params,f);
         studentdata.push_back(s);
-        linenum++;
     }
-    // for(Student x:studentdata){
-    //         for(double y:x.work){
-    //                 cout<<y<<" ";
-    //         }
-    //         cout<<x.fin<<endl;
-    // }
-    studentdata.pop_back();
+    for(Student x:studentdata){
+        for(double y:x.work){
+            cout<<y<<" ";
+        }
+        cout<<x.fin<<endl;
+    }
     infile.close();
     return studentdata;
 }
@@ -211,24 +226,22 @@ int main(){
     //bias added to final sum of all neurons
     double netbias=-5;
     vector<Student> data=read_in_data();
-    int numof_neurons=7,numof_inputs=12,epochs=100;
-    Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
-    if(numof_neurons!=nest.size()||numof_neurons!=wts.size()||numof_neurons!=biases.size()||numof_inputs!=nest[0].size()){
-        cout<<numof_neurons<<" vs "<<nest.size()<<endl;
-        cout<<numof_neurons<<" vs "<<wts.size()<<endl;
-        cout<<numof_inputs<<" vs "<<biases.size()<<endl;
-        cout<<numof_inputs<<" vs "<<nest[0].size()<<endl;
-        cout<<"Dimensional mismatch";
-        exit(1);
-    }
-    for(int x=0;x<epochs;x++){
-        for(Student s:data){
-            net.input=s.work;
-            net.actual=s.fin;
-            net.forwardpropagation();
-            net.backpropagation();
-        }
-    }
-    net.display_parameters();
+    cout<<"size is: "<<data.size()<<endl;
+    print2(data);
+    // int numof_neurons=7,numof_inputs=12,epochs=100;
+    // Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
+    // if(numof_neurons!=nest.size()||numof_neurons!=wts.size()||numof_inputs!=biases.size()||numof_inputs!=nest[0].size()){
+    //     cout<<"Dimensional mismatch";
+    //     exit(1);
+    // }
+    // for(int x=0;x<epochs;x++){
+    //     for(Student s:data){
+    //         net.input=s.work;
+    //         net.actual=s.fin;
+    //         net.forwardpropagation();
+    //         net.backpropagation();
+    //     }
+    // }
+    // net.display_parameters();
     return 0;
 }
