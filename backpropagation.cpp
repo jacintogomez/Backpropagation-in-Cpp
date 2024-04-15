@@ -23,9 +23,18 @@ double relu(double z){
     else{return z;}
 }
 
+double relu_derivative(double z){
+    if(z<0){return 0;}
+    else{return 1;}
+}
+
 double sigmoid(double z){
     double num=1.0,e=2.718;
     return num/(num+pow(e,-1*z));
+}
+
+double sigmoid_derivative(double z){
+    return sigmoid(z)*(1-sigmoid(z));
 }
 
 class Neuron{
@@ -42,7 +51,7 @@ public:
             z+=weights[x]*input[x];;
         }
         z+=bias;
-        result=sigmoid(z);
+        result=relu(z);
     }
 };
 
@@ -64,7 +73,7 @@ public:
     int num_neurons;
     double network_bias;
     double prediction=0;
-    double eta=0.01; //learning rate
+    double eta=0.1; //learning rate
     vd input;
     double actual;
     vector<Neuron> neurons;
@@ -75,7 +84,7 @@ public:
             prediction+=n.result*n.neuron_weight;
         }
         prediction+=network_bias;
-        cout<<"prediction is "<<prediction<<endl;
+        cout<<"prediction is "<<prediction<<" vs "<<actual<<" = "<<abs(prediction-actual)<<endl;
     }
     void backpropagation(){
         //int cost=pow((prediction-actual),2); //cost function
@@ -84,11 +93,12 @@ public:
         for(Neuron &n:neurons){
             n.neuron_weight-=eta*dcost_dpred*n.result;
             double z=n.z;
-            double dpred_dg=sigmoid(z)*(1-sigmoid(z));
+            double dpred_dg=relu_derivative(z);
             double dcost_intermediate=dcost_dpred*n.neuron_weight*dpred_dg;
             n.bias-=eta*dcost_intermediate;
             for(int x=0;x<inputs;x++){
                 n.weights[x]-=eta*dcost_intermediate*input[x];
+                cout<<"gradient is "<<eta*dcost_intermediate*input[x]<<endl;
             }
         }
     }
@@ -153,7 +163,7 @@ void print2(vector<Student> j){
 
 vector<Student> read_in_data(){
     ifstream infile;
-    string filename="test.txt";
+    string filename="update.txt";
     cout<<"file name is "<<filename<<endl;
     infile.open(filename);
     int linenum=1;
@@ -198,20 +208,15 @@ int main(){
                      {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
                      {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
                      {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
-                     {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
-                     {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
-                     {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
-                     {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4},
-                     {0.1,0.3,0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1,0.3,0.2,0.4}
     };
     //weights of neuron output
     vd wts={0.2,0.4,-0.1,-0.3,-0.2,-0.4,0.1};
     //biases added at each neuron
-    vd biases={-15,-15,-10,-10,-10,-15,-15};
+    vd biases={-1,-1,-1,-1,-1,-1,-1};
     //bias added to final sum of all neurons
-    double netbias=-5;
+    double netbias=-1;
     vector<Student> data=read_in_data();
-    int numof_neurons=7,numof_inputs=12,epochs=100;
+    int numof_neurons=7,numof_inputs=12,epochs=1;
     Network net(nest,wts,biases,numof_inputs,numof_neurons,netbias);
     if(numof_neurons!=nest.size()||numof_neurons!=wts.size()||numof_neurons!=biases.size()||numof_inputs!=nest[0].size()){
         cout<<numof_neurons<<" vs "<<nest.size()<<endl;
